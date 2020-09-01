@@ -4,8 +4,16 @@
 // and two actions.
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:async/async.dart';
+import 'dart:convert';
 
-void main() {
+const request = "https://api.hgbrasil.com/finance?format=json&key=e6fa1f5f";
+
+void main() async {
+  http.Response response = await http.get(request);
+  var decode = json.decode(response.body)["results"]["currencies"]["USD"];
+
   runApp(MaterialApp(
     home: Home(),
   ));
