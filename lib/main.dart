@@ -29,6 +29,21 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   double _currentSliderValue = 1;
+  double usd;
+  double eur;
+  double gbp;
+
+  String toUsd() {
+    return (_currentSliderValue / usd).toStringAsFixed(2);
+  }
+
+  String toEur() {
+    return (_currentSliderValue / usd).toStringAsFixed(2);
+  }
+
+  String toGbp() {
+    return (_currentSliderValue / usd).toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +57,40 @@ class _HomeState extends State<Home> {
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case (ConnectionState.none):
+                  return Center(child: Text("Error"));
                 case (ConnectionState.waiting):
-                  return Center(
-                    child: Text("Loading data..."),
-                  );
+                  return SingleChildScrollView(
+                      child: Column(children: <Widget>[
+                    Slider(
+                      value: _currentSliderValue,
+                      activeColor: Colors.deepPurple,
+                      inactiveColor: Colors.deepPurple,
+                      min: 0,
+                      max: 10,
+                      divisions: 10,
+                      label: ' R\$ ' + _currentSliderValue.round().toString(),
+                      onChanged: (double value) {
+                        setState(() {
+                          _currentSliderValue = value;
+                          toEur();
+                          toGbp();
+                          toUsd();
+                        });
+                      },
+                    ),
+                    buildCard("EUR", "€", _currentSliderValue, ""),
+                    buildCard("GBP", "£", _currentSliderValue, ""),
+                    buildCard("USD", "\$", _currentSliderValue, ""),
+                  ]));
                 default:
                   if (snapshot.hasError) {
                     return Center(
                       child: Text("Error..."),
                     );
                   } else {
+                    usd = snapshot.data["results"]["currencies"]["USD"]["buy"];
+                    eur = snapshot.data["results"]["currencies"]["EUR"]["buy"];
+                    gbp = snapshot.data["results"]["currencies"]["GBP"]["buy"];
                     return SingleChildScrollView(
                         child: Column(children: <Widget>[
                       Slider(
@@ -61,16 +100,18 @@ class _HomeState extends State<Home> {
                         min: 0,
                         max: 10,
                         divisions: 10,
-                        label: _currentSliderValue.round().toString(),
                         onChanged: (double value) {
                           setState(() {
                             _currentSliderValue = value;
+                            toEur();
+                            toGbp();
+                            toUsd();
                           });
                         },
                       ),
-                      buildCard("EUR", "€", _currentSliderValue),
-                      buildCard("LIB", "£", _currentSliderValue),
-                      buildCard("USD", "\$", _currentSliderValue),
+                      buildCard("EUR", "€", _currentSliderValue, toEur()),
+                      buildCard("GBP", "£", _currentSliderValue, toGbp()),
+                      buildCard("USD", "\$", _currentSliderValue, toUsd()),
                     ]));
                   }
               }
@@ -78,7 +119,8 @@ class _HomeState extends State<Home> {
   }
 }
 
-Widget buildCard(String currency, String prefix, double sliderValue) {
+Widget buildCard(
+    String currency, String prefix, double sliderValue, String text) {
   return Card(
       child: AnimatedContainer(
     decoration: BoxDecoration(
@@ -94,19 +136,19 @@ Widget buildCard(String currency, String prefix, double sliderValue) {
             '$prefix $currency',
             style: TextStyle(color: Colors.deepPurple),
           ),
-          subtitle: Text('Conversão de Reais para $currency.'),
+          subtitle: Text('BRL to $currency.'),
         ),
         ButtonBar(
           children: <Widget>[
             FlatButton(
-              child: Text("R\$ $sliderValue.00"),
+              child: Text("R\$ $sliderValue"),
               textColor: Colors.grey,
               onPressed: () {/* ... */},
             ),
             Icon(Icons.arrow_right),
             FlatButton(
               child: Text(
-                '$prefix $currency',
+                '$prefix $text',
                 style: TextStyle(color: Colors.deepPurple),
               ),
               onPressed: () {/* ... */},
