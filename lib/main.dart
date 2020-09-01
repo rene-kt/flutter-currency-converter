@@ -18,6 +18,7 @@ void main() async {
 
 Future<Map> getData() async {
   http.Response response = await http.get(request);
+  print(response.body);
   return json.decode(response.body);
 }
 
@@ -36,45 +37,44 @@ class _HomeState extends State<Home> {
           title: Text("Currency Converter"),
           backgroundColor: Colors.deepPurple,
         ),
-        body: SingleChildScrollView(
-            child: FutureBuilder(
-          future: getData(),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-              case ConnectionState.waiting:
-                return Center(
-                    child: Text("Loading data...",
-                        style: TextStyle(color: Colors.deepPurple)));
-              default:
-                if (snapshot.hasError) {
+        body: FutureBuilder<Map>(
+            future: getData(),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case (ConnectionState.none):
+                case (ConnectionState.waiting):
                   return Center(
-                      child: Text("Error...",
-                          style: TextStyle(color: Colors.deepPurple)));
-                } else {
-                  return Column(children: <Widget>[
-                    Slider(
-                      value: _currentSliderValue,
-                      activeColor: Colors.deepPurple,
-                      inactiveColor: Colors.deepPurple,
-                      min: 0,
-                      max: 10,
-                      divisions: 10,
-                      label: _currentSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _currentSliderValue = value;
-                        });
-                      },
-                    ),
-                    buildCard("EUR", "€", _currentSliderValue),
-                    buildCard("LIB", "£", _currentSliderValue),
-                    buildCard("USD", "\$", _currentSliderValue),
-                  ]);
-                }
-            }
-          },
-        )));
+                    child: Text("Loading data..."),
+                  );
+                default:
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text("Error..."),
+                    );
+                  } else {
+                    return SingleChildScrollView(
+                        child: Column(children: <Widget>[
+                      Slider(
+                        value: _currentSliderValue,
+                        activeColor: Colors.deepPurple,
+                        inactiveColor: Colors.deepPurple,
+                        min: 0,
+                        max: 10,
+                        divisions: 10,
+                        label: _currentSliderValue.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            _currentSliderValue = value;
+                          });
+                        },
+                      ),
+                      buildCard("EUR", "€", _currentSliderValue),
+                      buildCard("LIB", "£", _currentSliderValue),
+                      buildCard("USD", "\$", _currentSliderValue),
+                    ]));
+                  }
+              }
+            }));
   }
 }
 
