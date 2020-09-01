@@ -5,18 +5,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:async/async.dart';
+import 'dart:async';
 import 'dart:convert';
 
 const request = "https://api.hgbrasil.com/finance?format=json&key=e6fa1f5f";
 
 void main() async {
-  http.Response response = await http.get(request);
-  var decode = json.decode(response.body)["results"]["currencies"]["USD"];
-
   runApp(MaterialApp(
     home: Home(),
   ));
+}
+
+Future<Map> getData() async {
+  http.Response response = await http.get(request);
+  return json.decode(response.body);
 }
 
 class Home extends StatefulWidget {
@@ -35,133 +37,151 @@ class _HomeState extends State<Home> {
           backgroundColor: Colors.deepPurple,
         ),
         body: SingleChildScrollView(
-          child: Column(children: <Widget>[
-            Slider(
-              value: _currentSliderValue,
-              activeColor: Colors.deepPurple,
-              inactiveColor: Colors.deepPurple,
-              min: 0,
-              max: 10,
-              divisions: 10,
-              label: _currentSliderValue.round().toString(),
-              onChanged: (double value) {
-                setState(() {
-                  _currentSliderValue = value;
-                });
-              },
-            ),
-            Card(
-                child: AnimatedContainer(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              duration: Duration(seconds: 1),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.attach_money),
-                    title: Text(
-                      '€ EURO',
-                      style: TextStyle(color: Colors.deepPurple),
+            child: FutureBuilder(
+          future: getData(),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+                return Center(
+                    child: Text("Loading data...",
+                        style: TextStyle(color: Colors.deepPurple)));
+              default:
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text("Error...",
+                          style: TextStyle(color: Colors.deepPurple)));
+                } else {
+                  return Column(children: <Widget>[
+                    Slider(
+                      value: _currentSliderValue,
+                      activeColor: Colors.deepPurple,
+                      inactiveColor: Colors.deepPurple,
+                      min: 0,
+                      max: 10,
+                      divisions: 10,
+                      label: _currentSliderValue.round().toString(),
+                      onChanged: (double value) {
+                        setState(() {
+                          _currentSliderValue = value;
+                        });
+                      },
                     ),
-                    subtitle: Text('Conversão de Reais para Euro.'),
-                  ),
-                  ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        child: Text("R\$ $_currentSliderValue.00"),
-                        textColor: Colors.grey,
-                        onPressed: () {/* ... */},
+                    Card(
+                        child: AnimatedContainer(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      Icon(Icons.arrow_right),
-                      FlatButton(
-                        child: Text(
-                          '€ EURO',
-                          style: TextStyle(color: Colors.deepPurple),
-                        ),
-                        onPressed: () {/* ... */},
+                      duration: Duration(seconds: 1),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(Icons.attach_money),
+                            title: Text(
+                              '€ EURO',
+                              style: TextStyle(color: Colors.deepPurple),
+                            ),
+                            subtitle: Text('Conversão de Reais para Euro.'),
+                          ),
+                          ButtonBar(
+                            children: <Widget>[
+                              FlatButton(
+                                child: Text("R\$ $_currentSliderValue.00"),
+                                textColor: Colors.grey,
+                                onPressed: () {/* ... */},
+                              ),
+                              Icon(Icons.arrow_right),
+                              FlatButton(
+                                child: Text(
+                                  '€ EURO',
+                                  style: TextStyle(color: Colors.deepPurple),
+                                ),
+                                onPressed: () {/* ... */},
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-            Card(
-                child: AnimatedContainer(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              duration: Duration(seconds: 1),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.attach_money),
-                    title: Text(
-                      '£ LIBRA',
-                      style: TextStyle(color: Colors.deepPurple),
-                    ),
-                    subtitle: Text('Conversão de Reais para Libra.'),
-                  ),
-                  ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        child: Text("R\$ $_currentSliderValue.00"),
-                        textColor: Colors.grey,
-                        onPressed: () {/* ... */},
+                    )),
+                    Card(
+                        child: AnimatedContainer(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      Icon(Icons.arrow_right),
-                      FlatButton(
-                        child: Text(
-                          '£ LIBRA',
-                          style: TextStyle(color: Colors.deepPurple),
-                        ),
-                        onPressed: () {/* ... */},
+                      duration: Duration(seconds: 1),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(Icons.attach_money),
+                            title: Text(
+                              '£ LIBRA',
+                              style: TextStyle(color: Colors.deepPurple),
+                            ),
+                            subtitle: Text('Conversão de Reais para Libra.'),
+                          ),
+                          ButtonBar(
+                            children: <Widget>[
+                              FlatButton(
+                                child: Text("R\$ $_currentSliderValue.00"),
+                                textColor: Colors.grey,
+                                onPressed: () {/* ... */},
+                              ),
+                              Icon(Icons.arrow_right),
+                              FlatButton(
+                                child: Text(
+                                  '£ LIBRA',
+                                  style: TextStyle(color: Colors.deepPurple),
+                                ),
+                                onPressed: () {/* ... */},
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-            Card(
-                child: AnimatedContainer(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              duration: Duration(seconds: 1),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.attach_money),
-                    title: Text(
-                      '\$ DOLAR',
-                      style: TextStyle(color: Colors.deepPurple),
-                    ),
-                    subtitle: Text('Conversão de Reais para Dolar.'),
-                  ),
-                  ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        child: Text("R\$ $_currentSliderValue.00"),
-                        textColor: Colors.grey,
-                        onPressed: () {/* ... */},
+                    )),
+                    Card(
+                        child: AnimatedContainer(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      Icon(Icons.arrow_right),
-                      FlatButton(
-                        child: Text(
-                          '\$ DOLAR',
-                          style: TextStyle(color: Colors.deepPurple),
-                        ),
-                        onPressed: () {/* ... */},
+                      duration: Duration(seconds: 1),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(Icons.attach_money),
+                            title: Text(
+                              '\$ DOLAR',
+                              style: TextStyle(color: Colors.deepPurple),
+                            ),
+                            subtitle: Text('Conversão de Reais para Dolar.'),
+                          ),
+                          ButtonBar(
+                            children: <Widget>[
+                              FlatButton(
+                                child: Text("R\$ $_currentSliderValue.00"),
+                                textColor: Colors.grey,
+                                onPressed: () {/* ... */},
+                              ),
+                              Icon(Icons.arrow_right),
+                              FlatButton(
+                                child: Text(
+                                  '\$ DOLAR',
+                                  style: TextStyle(color: Colors.deepPurple),
+                                ),
+                                onPressed: () {/* ... */},
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-          ]),
-        ));
+                    )),
+                  ]);
+                }
+            }
+          },
+        )));
   }
 }
