@@ -67,121 +67,53 @@ class _HomeState extends State<Home> {
                         });
                       },
                     ),
-                    Card(
-                        child: AnimatedContainer(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      duration: Duration(seconds: 1),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.attach_money),
-                            title: Text(
-                              '€ EURO',
-                              style: TextStyle(color: Colors.deepPurple),
-                            ),
-                            subtitle: Text('Conversão de Reais para Euro.'),
-                          ),
-                          ButtonBar(
-                            children: <Widget>[
-                              FlatButton(
-                                child: Text("R\$ $_currentSliderValue.00"),
-                                textColor: Colors.grey,
-                                onPressed: () {/* ... */},
-                              ),
-                              Icon(Icons.arrow_right),
-                              FlatButton(
-                                child: Text(
-                                  '€ EURO',
-                                  style: TextStyle(color: Colors.deepPurple),
-                                ),
-                                onPressed: () {/* ... */},
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )),
-                    Card(
-                        child: AnimatedContainer(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      duration: Duration(seconds: 1),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.attach_money),
-                            title: Text(
-                              '£ LIBRA',
-                              style: TextStyle(color: Colors.deepPurple),
-                            ),
-                            subtitle: Text('Conversão de Reais para Libra.'),
-                          ),
-                          ButtonBar(
-                            children: <Widget>[
-                              FlatButton(
-                                child: Text("R\$ $_currentSliderValue.00"),
-                                textColor: Colors.grey,
-                                onPressed: () {/* ... */},
-                              ),
-                              Icon(Icons.arrow_right),
-                              FlatButton(
-                                child: Text(
-                                  '£ LIBRA',
-                                  style: TextStyle(color: Colors.deepPurple),
-                                ),
-                                onPressed: () {/* ... */},
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )),
-                    Card(
-                        child: AnimatedContainer(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      duration: Duration(seconds: 1),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.attach_money),
-                            title: Text(
-                              '\$ DOLAR',
-                              style: TextStyle(color: Colors.deepPurple),
-                            ),
-                            subtitle: Text('Conversão de Reais para Dolar.'),
-                          ),
-                          ButtonBar(
-                            children: <Widget>[
-                              FlatButton(
-                                child: Text("R\$ $_currentSliderValue.00"),
-                                textColor: Colors.grey,
-                                onPressed: () {/* ... */},
-                              ),
-                              Icon(Icons.arrow_right),
-                              FlatButton(
-                                child: Text(
-                                  '\$ DOLAR',
-                                  style: TextStyle(color: Colors.deepPurple),
-                                ),
-                                onPressed: () {/* ... */},
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )),
+                    buildCard("EUR", "€", _currentSliderValue),
+                    buildCard("LIB", "£", _currentSliderValue),
+                    buildCard("USD", "\$", _currentSliderValue),
                   ]);
                 }
             }
           },
         )));
   }
+}
+
+Widget buildCard(String currency, String prefix, double sliderValue) {
+  return Card(
+      child: AnimatedContainer(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+    ),
+    duration: Duration(seconds: 1),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ListTile(
+          leading: Icon(Icons.attach_money),
+          title: Text(
+            '$prefix $currency',
+            style: TextStyle(color: Colors.deepPurple),
+          ),
+          subtitle: Text('Conversão de Reais para $currency.'),
+        ),
+        ButtonBar(
+          children: <Widget>[
+            FlatButton(
+              child: Text("R\$ $sliderValue.00"),
+              textColor: Colors.grey,
+              onPressed: () {/* ... */},
+            ),
+            Icon(Icons.arrow_right),
+            FlatButton(
+              child: Text(
+                '$prefix $currency',
+                style: TextStyle(color: Colors.deepPurple),
+              ),
+              onPressed: () {/* ... */},
+            ),
+          ],
+        ),
+      ],
+    ),
+  ));
 }
